@@ -1,0 +1,2 @@
+# NoSqlRepositories
+Default NoSqlRepositories
