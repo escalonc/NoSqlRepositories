@@ -10,13 +10,21 @@ namespace Data.Mongo
     public class MongoContext : IMongoContext
     {
         private readonly IMongoDatabase _mongoDatabase;
+        private static bool _isModelSetup;
 
         public MongoContext(IDatabaseSettings settings)
         {
             Client = new MongoClient(settings.ConnectionString);
             _mongoDatabase = Client.GetDatabase(settings.DatabaseName);
 
+            Initialize();
+        }
+
+        private static void Initialize()
+        {
+            if (_isModelSetup) return;
             ModelBuilder();
+            _isModelSetup = true;
         }
 
         public IMongoCollection<T> GetCollection<T>(string collectionName)

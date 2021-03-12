@@ -23,7 +23,7 @@ namespace Data.Mongo
         private static string GetCollectionName(Type type)
         {
             Guard.Against.Null(type, nameof(type));
-            
+
             var bsonCollectionAttribute =
                 Attribute.GetCustomAttribute(type, typeof(BsonCollectionAttribute)) as BsonCollectionAttribute ??
                 throw new InvalidOperationException(
@@ -82,7 +82,7 @@ namespace Data.Mongo
             catch
             {
                 await session
-                    .AbortTransactionAsync(); // now Dispose on the session has nothing to do and won't block
+                    .AbortTransactionAsync();
                 throw;
             }
 
@@ -91,7 +91,19 @@ namespace Data.Mongo
 
         public async Task BatchDelete(Expression<Func<T, bool>> filter)
         {
-            await _collection.DeleteOneAsync(filter);
+            using var session = await _client.StartSessionAsync();
+            try
+            {
+                await _collection.DeleteManyAsync(filter);
+            }
+            catch
+            {
+                await session
+                    .AbortTransactionAsync();
+                throw;
+            }
+
+            await session.CommitTransactionAsync();
         }
 
         public async Task BatchUpdate(Expression<Func<T, bool>> filter)
