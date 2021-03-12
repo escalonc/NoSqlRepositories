@@ -12,7 +12,7 @@ namespace Data.Mongo
         private readonly IMongoDatabase _mongoDatabase;
         private static bool _isModelSetup;
 
-        public MongoContext(IDatabaseSettings settings)
+        protected MongoContext(IDatabaseSettings settings)
         {
             Client = new MongoClient(settings.ConnectionString);
             _mongoDatabase = Client.GetDatabase(settings.DatabaseName);
@@ -20,10 +20,10 @@ namespace Data.Mongo
             Initialize();
         }
 
-        private static void Initialize()
+        private void Initialize()
         {
             if (_isModelSetup) return;
-            ModelBuilder();
+            OnModelCreating();
             _isModelSetup = true;
         }
 
@@ -34,7 +34,7 @@ namespace Data.Mongo
 
         public IMongoClient Client { get; }
 
-        private static void ModelBuilder()
+        protected virtual void OnModelCreating()
         {
             BsonClassMap.RegisterClassMap<BaseEntity>(cm =>
             {

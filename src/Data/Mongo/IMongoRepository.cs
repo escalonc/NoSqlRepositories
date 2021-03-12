@@ -10,10 +10,10 @@ namespace Data.Mongo
 {
     public interface IMongoRepository<T> : INoSqlRepository<T> where T : BaseEntity
     {
-        IQueryable<T> Filter(bool onlyEnabledEntities);
+        IQueryable<T> Filter(bool onlyEnabledEntities = true);
 
-        Task BatchInsert(IEnumerable<T> entities);
+        Task AddBatch(IEnumerable<T> entities);
         
-        Task BatchDelete(Expression<Func<T, bool>> filter);
+        Task DeleteBatch(Expression<Func<T, bool>> filter);
     }
 }

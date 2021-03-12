@@ -72,9 +72,10 @@ namespace Data.Mongo
                 .Where(e => e.Enabled == onlyEnabledEntities);
         }
 
-        public async Task BatchInsert(IEnumerable<T> entities)
+        public async Task AddBatch(IEnumerable<T> entities)
         {
             using var session = await _client.StartSessionAsync();
+            session.StartTransaction();
             try
             {
                 await _collection.InsertManyAsync(entities);
@@ -89,9 +90,10 @@ namespace Data.Mongo
             await session.CommitTransactionAsync();
         }
 
-        public async Task BatchDelete(Expression<Func<T, bool>> filter)
+        public async Task DeleteBatch(Expression<Func<T, bool>> filter)
         {
             using var session = await _client.StartSessionAsync();
+            session.StartTransaction();
             try
             {
                 await _collection.DeleteManyAsync(filter);
@@ -104,11 +106,6 @@ namespace Data.Mongo
             }
 
             await session.CommitTransactionAsync();
-        }
-
-        public async Task BatchUpdate(Expression<Func<T, bool>> filter)
-        {
-            await _collection.DeleteOneAsync(filter);
         }
     }
 }

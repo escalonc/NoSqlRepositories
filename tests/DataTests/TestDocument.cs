@@ -4,7 +4,7 @@ using Data.Mongo;
 namespace DataTests
 {
     [BsonCollection("things")]
-    public class TestEntity : BaseEntity
+    public class TestDocument : BaseEntity
     {
         public string Name { get; set; }
     }
