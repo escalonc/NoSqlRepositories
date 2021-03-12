@@ -1,4 +1,5 @@
 using System;
+using Core.Contracts;
 using Core.Models;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.IdGenerators;
@@ -12,8 +13,8 @@ namespace Data.Mongo
 
         public MongoContext(IDatabaseSettings settings)
         {
-            var client = new MongoClient(settings.ConnectionString);
-            _mongoDatabase = client.GetDatabase(settings.DatabaseName);
+            Client = new MongoClient(settings.ConnectionString);
+            _mongoDatabase = Client.GetDatabase(settings.DatabaseName);
 
             ModelBuilder();
         }
@@ -23,7 +24,9 @@ namespace Data.Mongo
             return _mongoDatabase.GetCollection<T>(collectionName);
         }
 
-        protected virtual void ModelBuilder()
+        public IMongoClient Client { get; }
+
+        private static void ModelBuilder()
         {
             BsonClassMap.RegisterClassMap<BaseEntity>(cm =>
             {

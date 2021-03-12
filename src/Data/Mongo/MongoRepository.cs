@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Ardalis.GuardClauses;
 using Core.Models;
@@ -11,22 +12,22 @@ namespace Data.Mongo
     public class MongoRepository<T> : IMongoRepository<T> where T : BaseEntity
     {
         private readonly IMongoCollection<T> _collection;
+        private readonly IMongoClient _client;
 
-        public MongoRepository(IMongoContext context)
+        protected MongoRepository(IMongoContext context)
         {
+            _client = context.Client;
             _collection = context.GetCollection<T>(GetCollectionName(typeof(T)));
         }
 
         private static string GetCollectionName(Type type)
         {
+            Guard.Against.Null(type, nameof(type));
+            
             var bsonCollectionAttribute =
-                (BsonCollectionAttribute) Attribute.GetCustomAttribute(type, typeof(BsonCollectionAttribute));
-
-            if (bsonCollectionAttribute == null)
-            {
+                Attribute.GetCustomAttribute(type, typeof(BsonCollectionAttribute)) as BsonCollectionAttribute ??
                 throw new InvalidOperationException(
                     $"Collection name must to be specified using: {nameof(BsonCollectionAttribute)}");
-            }
 
             return bsonCollectionAttribute.CollectionName;
         }
@@ -64,11 +65,38 @@ namespace Data.Mongo
             await _collection.DeleteOneAsync(e => e.Id == entity.Id);
         }
 
-        public IQueryable Filter(bool onlyEnabledEntities = true)
+        public IQueryable<T> Filter(bool onlyEnabledEntities = true)
         {
             return _collection
                 .AsQueryable()
                 .Where(e => e.Enabled == onlyEnabledEntities);
+        }
+
+        public async Task BatchInsert(IEnumerable<T> entities)
+        {
+            using var session = await _client.StartSessionAsync();
+            try
+            {
+                await _collection.InsertManyAsync(entities);
+            }
+            catch
+            {
+                await session
+                    .AbortTransactionAsync(); // now Dispose on the session has nothing to do and won't block
+                throw;
+            }
+
+            await session.CommitTransactionAsync();
+        }
+
+        public async Task BatchDelete(Expression<Func<T, bool>> filter)
+        {
+            await _collection.DeleteOneAsync(filter);
+        }
+
+        public async Task BatchUpdate(Expression<Func<T, bool>> filter)
+        {
+            await _collection.DeleteOneAsync(filter);
         }
     }
 }
