@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2E9A32B7-AA99-44AB-98DC-1F3FD89D1282}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4CCCD045-38DC-47A6-BFFD-551B9105810A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "src\Core\Core.csproj", "{D456900E-509D-4E73-89D7-21A339193B7B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "src\Data\Data.csproj", "{56FD2DB1-B38E-44FD-9505-06B658C4286E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataTests", "tests\DataTests\DataTests.csproj", "{8EF361A4-7900-4623-B1E9-AEED09634327}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D456900E-509D-4E73-89D7-21A339193B7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D456900E-509D-4E73-89D7-21A339193B7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D456900E-509D-4E73-89D7-21A339193B7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D456900E-509D-4E73-89D7-21A339193B7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56FD2DB1-B38E-44FD-9505-06B658C4286E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56FD2DB1-B38E-44FD-9505-06B658C4286E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56FD2DB1-B38E-44FD-9505-06B658C4286E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56FD2DB1-B38E-44FD-9505-06B658C4286E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EF361A4-7900-4623-B1E9-AEED09634327}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EF361A4-7900-4623-B1E9-AEED09634327}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EF361A4-7900-4623-B1E9-AEED09634327}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EF361A4-7900-4623-B1E9-AEED09634327}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D456900E-509D-4E73-89D7-21A339193B7B} = {2E9A32B7-AA99-44AB-98DC-1F3FD89D1282}
+		{56FD2DB1-B38E-44FD-9505-06B658C4286E} = {2E9A32B7-AA99-44AB-98DC-1F3FD89D1282}
+		{8EF361A4-7900-4623-B1E9-AEED09634327} = {4CCCD045-38DC-47A6-BFFD-551B9105810A}
+	EndGlobalSection
+EndGlobal
