@@ -1,4 +1,5 @@
 using System;
+using Core.Contracts;
 using Core.Models;
 using Data.Mongo;
 using Mongo2Go;
@@ -19,9 +20,13 @@ namespace DataTests
                 DatabaseName = "tests"
             };
 
+            IAuditable auditable = new BaseEntity
+                {CreatedBy = "Chris", UpdatedBy = "Chris", CreatedDate = DateTime.Now, UpdatedDate = DateTime.Now};
+
             var context = new TestContext(databaseSettings);
-            Repository = new TestRepository(context);
+            Repository = new TestRepository(context, auditable);
         }
+
         public void Dispose()
         {
             _runner.Dispose();

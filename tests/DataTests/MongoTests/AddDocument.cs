@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.Contracts;
 using Core.Models;
-using Data.Mongo;
 using FluentAssertions;
 using Xunit;
 
@@ -18,7 +18,7 @@ namespace DataTests.MongoTests
                 Name = $"Sample {Guid.NewGuid().ToString()}"
             };
 
-            await Repository.Add(document);
+            await Repository.Add(null);
 
             var actualDocument = Repository
                 .Filter()
@@ -42,6 +42,22 @@ namespace DataTests.MongoTests
                 .Where(d => documents.Select(e => e.Name).Contains(d.Name));
 
             actualDocument.Should().AllBeEquivalentTo(documents);
+        }
+
+        [Fact]
+        public async Task Add_Inserts_Entity()
+        {
+            var mongoContext = new TestContext(new DatabaseSettings
+            {
+                ConnectionString =
+                    "mongodb+srv://escalonc:admin#123#@cluster0.ywtwn.mongodb.net/?retryWrites=true&w=majority",
+                DatabaseName = "tests"
+            });
+
+            IAuditable auditable = new BaseEntity();
+            var testRepository = new TestRepository(mongoContext, auditable);
+
+            await testRepository.Add(new TestDocument {Name = $"Hello {Guid.NewGuid().ToString()}"});
         }
     }
 }

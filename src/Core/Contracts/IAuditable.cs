@@ -1,14 +1,9 @@
 using System;
-using Core.Contracts;
 
-namespace Core.Models
+namespace Core.Contracts
 {
-    public class BaseEntity : IAuditable
+    public interface IAuditable
     {
-        public Guid Id { get; set; }
-
-        public bool Enabled { get; set; } = true;
-
         public string? CreatedBy { get; set; }
 
         public DateTime CreatedDate { get; set; }

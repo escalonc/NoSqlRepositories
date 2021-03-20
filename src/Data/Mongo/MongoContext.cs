@@ -1,4 +1,3 @@
-using System;
 using Core.Contracts;
 using Core.Models;
 using MongoDB.Bson.Serialization;
@@ -9,8 +8,8 @@ namespace Data.Mongo
 {
     public class MongoContext : IMongoContext
     {
-        private readonly IMongoDatabase _mongoDatabase;
         private static bool _isModelSetup;
+        private readonly IMongoDatabase _mongoDatabase;
 
         protected MongoContext(IDatabaseSettings settings)
         {
@@ -20,19 +19,19 @@ namespace Data.Mongo
             Initialize();
         }
 
-        private void Initialize()
-        {
-            if (_isModelSetup) return;
-            OnModelCreating();
-            _isModelSetup = true;
-        }
-
         public IMongoCollection<T> GetCollection<T>(string collectionName)
         {
             return _mongoDatabase.GetCollection<T>(collectionName);
         }
 
         public IMongoClient Client { get; }
+
+        private void Initialize()
+        {
+            if (_isModelSetup) return;
+            OnModelCreating();
+            _isModelSetup = true;
+        }
 
         protected virtual void OnModelCreating()
         {

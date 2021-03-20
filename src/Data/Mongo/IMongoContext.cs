@@ -4,8 +4,7 @@ namespace Data.Mongo
 {
     public interface IMongoContext
     {
-        IMongoCollection<T> GetCollection<T>(string name);
-
         public IMongoClient Client { get; }
+        IMongoCollection<T> GetCollection<T>(string name);
     }
 }

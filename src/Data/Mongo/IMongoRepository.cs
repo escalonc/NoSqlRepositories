@@ -12,8 +12,10 @@ namespace Data.Mongo
     {
         IQueryable<T> Filter(bool onlyEnabledEntities = true);
 
+        Task Disabled(T entity);
+
         Task AddBatch(IEnumerable<T> entities);
-        
+
         Task DeleteBatch(Expression<Func<T, bool>> filter);
     }
 }
