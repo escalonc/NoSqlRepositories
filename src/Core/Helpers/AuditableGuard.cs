@@ -1,6 +1,5 @@
 using System;
 using Core.Contracts;
-using Core.Models;
 
 // ReSharper disable once CheckNamespace
 namespace Ardalis.GuardClauses

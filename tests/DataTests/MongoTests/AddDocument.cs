@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Core.Contracts;
 using Core.Models;
 using FluentAssertions;
 using Xunit;
@@ -54,8 +53,7 @@ namespace DataTests.MongoTests
                 DatabaseName = "tests"
             });
 
-            IAuditable auditable = new BaseEntity();
-            var testRepository = new TestRepository(mongoContext, auditable);
+            var testRepository = new TestRepository(mongoContext);
 
             await testRepository.Add(new TestDocument {Name = $"Hello {Guid.NewGuid().ToString()}"});
         }

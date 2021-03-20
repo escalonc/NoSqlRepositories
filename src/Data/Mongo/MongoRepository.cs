@@ -16,11 +16,9 @@ namespace Data.Mongo
         private readonly IMongoClient _client;
         private readonly IMongoCollection<T> _collection;
 
-        protected MongoRepository(IMongoContext context, IAuditable auditable)
+        protected MongoRepository(IMongoContext context)
         {
-            Guard.Against.Auditable(auditable, nameof(auditable));
-
-            _auditable = auditable;
+            _auditable = context.Auditable;
             _client = context.Client;
             _collection = context.GetCollection<T>(GetCollectionName(typeof(T)));
         }
@@ -83,7 +81,7 @@ namespace Data.Mongo
         public async Task AddBatch(IEnumerable<T> entities)
         {
             Guard.Against.Null(entities, nameof(entities));
-            
+
             using var session = await _client.StartSessionAsync();
             session.StartTransaction();
             try

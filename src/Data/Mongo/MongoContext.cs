@@ -1,3 +1,4 @@
+using Ardalis.GuardClauses;
 using Core.Contracts;
 using Core.Models;
 using MongoDB.Bson.Serialization;
@@ -11,8 +12,11 @@ namespace Data.Mongo
         private static bool _isModelSetup;
         private readonly IMongoDatabase _mongoDatabase;
 
-        protected MongoContext(IDatabaseSettings settings)
+        protected MongoContext(IDatabaseSettings settings, IAuditable auditable)
         {
+            Guard.Against.Auditable(auditable, nameof(auditable));
+
+            Auditable = auditable;
             Client = new MongoClient(settings.ConnectionString);
             _mongoDatabase = Client.GetDatabase(settings.DatabaseName);
 
@@ -25,6 +29,8 @@ namespace Data.Mongo
         }
 
         public IMongoClient Client { get; }
+
+        public IAuditable Auditable { get; }
 
         private void Initialize()
         {
