@@ -10,12 +10,22 @@ namespace Data.Mongo
 {
     public interface IMongoRepository<T> : INoSqlRepository<T> where T : BaseEntity
     {
-        IQueryable<T> Filter(bool onlyEnabledEntities = true);
+        Task<IEnumerable<T>> Find(Expression<Func<T, bool>> filter);
 
-        Task Disabled(T entity);
+        Task<IEnumerable<T>> Find(Expression<Func<T, bool>> filter, Expression<Func<T, object>> sortingField,
+            SortOptions sortOptions = SortOptions.Ascending);
 
-        Task AddBatch(IEnumerable<T> entities);
+        Task<IEnumerable<TProjection>> Find<TProjection>(Expression<Func<T, bool>> filter,
+            Expression<Func<T, TProjection>> projectionExpression, Expression<Func<T, object>> sortingField,
+            SortOptions sortOptions = SortOptions.Ascending);
 
+        Task Disable(T entity);
+        
+        Task DisableBatch(IList<T> entities);
+
+        Task AddBatch(IList<T> entities);
+
+        Task UpdateBatch(IList<T> entities);
         Task DeleteBatch(Expression<Func<T, bool>> filter);
     }
 }

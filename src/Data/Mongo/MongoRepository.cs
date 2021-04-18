@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Ardalis.GuardClauses;
@@ -26,15 +25,19 @@ namespace Data.Mongo
         public async Task<IEnumerable<T>> FindAll(bool onlyEnabledEntities = true)
         {
             return await _collection
-                .Find(e => e.Enabled == onlyEnabledEntities)
+                .Find(FilterByEnabledEntities(onlyEnabledEntities))
                 .ToListAsync();
         }
 
         public async Task<T> FindById(Guid id, bool onlyEnabledEntities = true)
         {
             Guard.Against.Null(id, nameof(id));
+
+            // TODO: Review filter
+            var filter = Builders<T>.Filter.Where(e => e.Id == id) & FilterByEnabledEntities(onlyEnabledEntities);
+            
             return await _collection
-                .Find(e => e.Id == id && e.Enabled == onlyEnabledEntities)
+                .Find(filter)
                 .FirstOrDefaultAsync();
         }
 
@@ -54,6 +57,8 @@ namespace Data.Mongo
 
             entity.UpdatedBy = _auditable.UpdatedBy;
             entity.UpdatedDate = _auditable.UpdatedDate;
+            
+            // TODO: Support partial update
 
             await _collection.ReplaceOneAsync(e => e.Id == entity.Id, entity);
         }
@@ -64,21 +69,54 @@ namespace Data.Mongo
             await _collection.DeleteOneAsync(e => e.Id == entity.Id);
         }
 
-        public IQueryable<T> Filter(bool onlyEnabledEntities = true)
+        public async Task<long> Count(bool onlyEnabledEntities = true)
         {
-            return _collection
-                .AsQueryable()
-                .Where(e => e.Enabled == onlyEnabledEntities);
+            return await _collection.CountDocumentsAsync(FilterByEnabledEntities(onlyEnabledEntities));
         }
 
-        public async Task Disabled(T entity)
+        public async Task<IEnumerable<T>> Find(Expression<Func<T, bool>> filter)
+        {
+            return await _collection.Find(filter).ToListAsync();
+        }
+
+        public Task<IEnumerable<T>> Find(Expression<Func<T, bool>> filter, Expression<Func<T, object>> sortingField,
+            SortOptions sortOptions = SortOptions.Ascending)
+        {
+            return Sort(_collection.Find(filter), sortingField, sortOptions);
+        }
+
+        public async Task<IEnumerable<TProjection>> Find<TProjection>(Expression<Func<T, bool>> filter,
+            Expression<Func<T, TProjection>> projectionExpression, Expression<Func<T, object>> sortingField,
+            SortOptions sortOptions = SortOptions.Ascending)
+        {
+            return await Sort(_collection.Find(filter).Project(projectionExpression), sortingField, sortOptions);
+        }
+
+        private async Task<IEnumerable<TResult>> Sort<TResult>(IFindFluent<T, TResult> collection, Expression<Func<T, object>> sortingField, SortOptions sortOptions)
+        {
+            var data = collection.SortBy(sortingField);
+
+            if (sortOptions == SortOptions.Descending)
+            {
+                data = collection.SortByDescending(sortingField);
+            }
+
+            return await data.ToListAsync();
+        }
+
+        public async Task Disable(T entity)
         {
             Guard.Against.Null(entity, nameof(entity));
             entity.Enabled = false;
             await Update(entity);
         }
 
-        public async Task AddBatch(IEnumerable<T> entities)
+        public Task DisableBatch(IList<T> entities)
+        {
+            
+        }
+
+        public async Task AddBatch(IList<T> entities)
         {
             Guard.Against.Null(entities, nameof(entities));
 
@@ -96,6 +134,11 @@ namespace Data.Mongo
             }
 
             await session.CommitTransactionAsync();
+        }
+
+        public Task UpdateBatch(IList<T> entities)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task DeleteBatch(Expression<Func<T, bool>> filter)
@@ -126,6 +169,18 @@ namespace Data.Mongo
                     $"Collection name must to be specified using: {nameof(BsonCollectionAttribute)}");
 
             return bsonCollectionAttribute.CollectionName;
+        }
+
+        private static FilterDefinition<T> FilterByEnabledEntities(bool onlyEnabledEntities)
+        {
+            var filter = Builders<T>.Filter.Where(x => x.Enabled);;
+
+            if (!onlyEnabledEntities)
+            {
+                filter = FilterDefinition<T>.Empty;
+            }
+
+            return filter;
         }
     }
 }
