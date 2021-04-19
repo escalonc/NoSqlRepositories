@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Ardalis.GuardClauses;
@@ -35,7 +36,7 @@ namespace Data.Mongo
 
             // TODO: Review filter
             var filter = Builders<T>.Filter.Where(e => e.Id == id) & FilterByEnabledEntities(onlyEnabledEntities);
-            
+
             return await _collection
                 .Find(filter)
                 .FirstOrDefaultAsync();
@@ -57,7 +58,7 @@ namespace Data.Mongo
 
             entity.UpdatedBy = _auditable.UpdatedBy;
             entity.UpdatedDate = _auditable.UpdatedDate;
-            
+
             // TODO: Support partial update
 
             await _collection.ReplaceOneAsync(e => e.Id == entity.Id, entity);
@@ -92,7 +93,8 @@ namespace Data.Mongo
             return await Sort(_collection.Find(filter).Project(projectionExpression), sortingField, sortOptions);
         }
 
-        private async Task<IEnumerable<TResult>> Sort<TResult>(IFindFluent<T, TResult> collection, Expression<Func<T, object>> sortingField, SortOptions sortOptions)
+        private async Task<IEnumerable<TResult>> Sort<TResult>(IFindFluent<T, TResult> collection,
+            Expression<Func<T, object>> sortingField, SortOptions sortOptions)
         {
             var data = collection.SortBy(sortingField);
 
@@ -111,9 +113,24 @@ namespace Data.Mongo
             await Update(entity);
         }
 
-        public Task DisableBatch(IList<T> entities)
+        public async Task DisableBatch(IList<T> entities)
         {
-            
+            using var session = await _client.StartSessionAsync();
+            session.StartTransaction();
+            try
+            {
+                var ids = entities.Select(x => x.Id);
+                var updateDefinition = Builders<T>.Update.Set(x => x.Enabled, false);
+                await _collection.UpdateManyAsync(x => ids.Contains(x.Id), updateDefinition);
+            }
+            catch
+            {
+                await session
+                    .AbortTransactionAsync();
+                throw;
+            }
+
+            await session.CommitTransactionAsync();
         }
 
         public async Task AddBatch(IList<T> entities)
@@ -136,9 +153,25 @@ namespace Data.Mongo
             await session.CommitTransactionAsync();
         }
 
-        public Task UpdateBatch(IList<T> entities)
+        public async Task UpdateBatch(IList<T> entities)
         {
-            throw new NotImplementedException();
+            using var session = await _client.StartSessionAsync();
+            session.StartTransaction();
+            try
+            {
+                foreach (var entity in entities)
+                {
+                    await _collection.ReplaceOneAsync(x => x.Id == entity.Id, entity);
+                }
+            }
+            catch
+            {
+                await session
+                    .AbortTransactionAsync();
+                throw;
+            }
+
+            await session.CommitTransactionAsync();
         }
 
         public async Task DeleteBatch(Expression<Func<T, bool>> filter)
@@ -173,7 +206,7 @@ namespace Data.Mongo
 
         private static FilterDefinition<T> FilterByEnabledEntities(bool onlyEnabledEntities)
         {
-            var filter = Builders<T>.Filter.Where(x => x.Enabled);;
+            var filter = Builders<T>.Filter.Where(x => x.Enabled);
 
             if (!onlyEnabledEntities)
             {

@@ -1,3 +1,4 @@
+using System;
 using Core.Contracts;
 using Core.Models;
 using Data.Mongo;
@@ -7,7 +8,9 @@ namespace DataTests
 {
     public class TestContext : MongoContext
     {
-        public TestContext([NotNull] IDatabaseSettings settings) : base(settings, new BaseEntity())
+        public TestContext([NotNull] IDatabaseSettings settings) : base(settings,
+            new BaseEntity
+                {CreatedBy = "Chris", CreatedDate = DateTime.Now, UpdatedBy = "Chris", UpdatedDate = DateTime.Now})
         {
         }
     }

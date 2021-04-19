@@ -17,8 +17,10 @@ namespace DataTests.MongoTests
                 Name = $"Sample {Guid.NewGuid().ToString()}"
             };
 
-           
-           
+            await Repository.Add(document);
+            var actualDocument = Repository.Find(d => d.Name == document.Name);
+
+            actualDocument.Should().NotBeNull();
         }
 
         [Fact]
@@ -30,23 +32,8 @@ namespace DataTests.MongoTests
             }).ToList();
 
             await Repository.AddBatch(documents);
-
             
-        }
-
-        [Fact]
-        public async Task Add_Inserts_Entity()
-        {
-            var mongoContext = new TestContext(new DatabaseSettings
-            {
-                ConnectionString =
-                    "mongodb+srv://escalonc:admin#123#@cluster0.ywtwn.mongodb.net/?retryWrites=true&w=majority",
-                DatabaseName = "tests"
-            });
-
-            var testRepository = new TestRepository(mongoContext);
-
-            await testRepository.Add(new TestDocument {Name = $"Hello {Guid.NewGuid().ToString()}"});
+            
         }
     }
 }
