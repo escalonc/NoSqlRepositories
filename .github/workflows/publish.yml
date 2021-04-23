@@ -38,5 +38,4 @@ jobs:
           registry-url: https://nuget.pkg.github.com/escalonc/index.json
         env:
           PACKAGES_GITHUB_TOKEN: ${{secrets.PACKAGES_GITHUB_TOKEN}}
-#      - run: dotnet nuget push "bin/Release/OctocatApp.1.0.0.nupkg" --api-key YOUR_GITHUB_PAT --source "github"
-      - run: ls
+      - run: dotnet nuget push "./src/NoSqlRepositories/bin/Debug/NoSqlRepositories.1.0.0.nupkg" --api-key ${{secrets.PACKAGES_GITHUB_TOKEN}} --source "https://nuget.pkg.github.com/escalonc/index.json"
