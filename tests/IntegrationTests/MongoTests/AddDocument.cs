@@ -1,11 +1,10 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Core.Models;
 using FluentAssertions;
 using Xunit;
 
-namespace DataTests.MongoTests
+namespace IntegrationTests.MongoTests
 {
     public class AddDocument : DatabaseFixture
     {
@@ -14,11 +13,11 @@ namespace DataTests.MongoTests
         {
             var document = new TestDocument
             {
-                Name = $"Sample {Guid.NewGuid().ToString()}"
+                Name = $"Sample {Guid.NewGuid()}"
             };
 
             await Repository.Add(document);
-            var actualDocument = Repository.Find(d => d.Name == document.Name);
+            var actualDocument = await Repository.Find(d => d.Name == document.Name);
 
             actualDocument.Should().NotBeNull();
         }
@@ -28,12 +27,15 @@ namespace DataTests.MongoTests
         {
             var documents = Enumerable.Range(1, 10).Select(i => new TestDocument
             {
-                Name = $"Sample {Guid.NewGuid().ToString()}"
+                Name = $"Sample {Guid.NewGuid()}"
             }).ToList();
 
             await Repository.AddBatch(documents);
-            
-            
+            var ids = documents.Select(x => x.Id);
+
+            var actualDocuments = await Repository.Find(x => ids.Contains(x.Id));
+
+            actualDocuments.Should().NotBeNull();
         }
     }
 }

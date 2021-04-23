@@ -1,6 +1,6 @@
 using System;
 
-namespace Core.Contracts
+namespace NoSqlRepositories.Contracts
 {
     public interface IAuditable
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace Data.Mongo
+namespace NoSqlRepositories.Mongo
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class BsonCollectionAttribute : Attribute

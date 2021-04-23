@@ -1,4 +1,4 @@
-﻿namespace Core.Models
+﻿namespace NoSqlRepositories.Models
 {
     public enum SortOptions
     {

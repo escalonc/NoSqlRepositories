@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Core.Contracts;
-using Core.Models;
+using NoSqlRepositories.Contracts;
+using NoSqlRepositories.Models;
 
-namespace Data.Mongo
+namespace NoSqlRepositories.Mongo
 {
     public interface IMongoRepository<T> : INoSqlRepository<T> where T : BaseEntity
     {
@@ -20,7 +19,7 @@ namespace Data.Mongo
             SortOptions sortOptions = SortOptions.Ascending);
 
         Task Disable(T entity);
-        
+
         Task DisableBatch(IList<T> entities);
 
         Task AddBatch(IList<T> entities);

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Core.Models;
+using NoSqlRepositories.Models;
 
-namespace Core.Contracts
+namespace NoSqlRepositories.Contracts
 {
     public interface INoSqlRepository<T> where T : BaseEntity
     {

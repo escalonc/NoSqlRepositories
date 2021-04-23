@@ -4,11 +4,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Ardalis.GuardClauses;
-using Core.Contracts;
-using Core.Models;
 using MongoDB.Driver;
+using NoSqlRepositories.Contracts;
+using NoSqlRepositories.Models;
 
-namespace Data.Mongo
+namespace NoSqlRepositories.Mongo
 {
     public class MongoRepository<T> : IMongoRepository<T> where T : BaseEntity
     {
@@ -93,19 +93,6 @@ namespace Data.Mongo
             return await Sort(_collection.Find(filter).Project(projectionExpression), sortingField, sortOptions);
         }
 
-        private async Task<IEnumerable<TResult>> Sort<TResult>(IFindFluent<T, TResult> collection,
-            Expression<Func<T, object>> sortingField, SortOptions sortOptions)
-        {
-            var data = collection.SortBy(sortingField);
-
-            if (sortOptions == SortOptions.Descending)
-            {
-                data = collection.SortByDescending(sortingField);
-            }
-
-            return await data.ToListAsync();
-        }
-
         public async Task Disable(T entity)
         {
             Guard.Against.Null(entity, nameof(entity));
@@ -159,10 +146,7 @@ namespace Data.Mongo
             session.StartTransaction();
             try
             {
-                foreach (var entity in entities)
-                {
-                    await _collection.ReplaceOneAsync(x => x.Id == entity.Id, entity);
-                }
+                foreach (var entity in entities) await _collection.ReplaceOneAsync(x => x.Id == entity.Id, entity);
             }
             catch
             {
@@ -192,6 +176,16 @@ namespace Data.Mongo
             await session.CommitTransactionAsync();
         }
 
+        private async Task<IEnumerable<TResult>> Sort<TResult>(IFindFluent<T, TResult> collection,
+            Expression<Func<T, object>> sortingField, SortOptions sortOptions)
+        {
+            var data = collection.SortBy(sortingField);
+
+            if (sortOptions == SortOptions.Descending) data = collection.SortByDescending(sortingField);
+
+            return await data.ToListAsync();
+        }
+
         private static string GetCollectionName(Type type)
         {
             Guard.Against.Null(type, nameof(type));
@@ -208,10 +202,7 @@ namespace Data.Mongo
         {
             var filter = Builders<T>.Filter.Where(x => x.Enabled);
 
-            if (!onlyEnabledEntities)
-            {
-                filter = FilterDefinition<T>.Empty;
-            }
+            if (!onlyEnabledEntities) filter = FilterDefinition<T>.Empty;
 
             return filter;
         }

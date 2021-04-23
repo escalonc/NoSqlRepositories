@@ -1,8 +1,8 @@
 using System;
-using Core.Contracts;
+using Ardalis.GuardClauses;
+using NoSqlRepositories.Contracts;
 
-// ReSharper disable once CheckNamespace
-namespace Ardalis.GuardClauses
+namespace NoSqlRepositories.Helpers
 {
     public static class AuditableGuard
     {

@@ -1,7 +1,7 @@
-using Core.Models;
-using Data.Mongo;
+using NoSqlRepositories.Models;
+using NoSqlRepositories.Mongo;
 
-namespace DataTests
+namespace IntegrationTests
 {
     [BsonCollection("things")]
     public class TestDocument : BaseEntity

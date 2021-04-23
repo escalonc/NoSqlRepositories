@@ -1,4 +1,4 @@
-namespace Core.Contracts
+namespace NoSqlRepositories.Contracts
 {
     public interface IDatabaseSettings
     {

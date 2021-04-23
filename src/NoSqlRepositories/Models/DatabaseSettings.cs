@@ -1,6 +1,6 @@
-using Core.Contracts;
+using NoSqlRepositories.Contracts;
 
-namespace Core.Models
+namespace NoSqlRepositories.Models
 {
     public class DatabaseSettings : IDatabaseSettings
     {

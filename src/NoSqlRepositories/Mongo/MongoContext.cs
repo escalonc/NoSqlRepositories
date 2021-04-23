@@ -1,11 +1,12 @@
 using Ardalis.GuardClauses;
-using Core.Contracts;
-using Core.Models;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.IdGenerators;
 using MongoDB.Driver;
+using NoSqlRepositories.Contracts;
+using NoSqlRepositories.Helpers;
+using NoSqlRepositories.Models;
 
-namespace Data.Mongo
+namespace NoSqlRepositories.Mongo
 {
     public class MongoContext : IMongoContext
     {

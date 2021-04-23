@@ -1,7 +1,7 @@
-using Core.Contracts;
 using MongoDB.Driver;
+using NoSqlRepositories.Contracts;
 
-namespace Data.Mongo
+namespace NoSqlRepositories.Mongo
 {
     public interface IMongoContext
     {

@@ -1,9 +1,9 @@
 using System;
-using Core.Models;
-using Data.Mongo;
 using Mongo2Go;
+using NoSqlRepositories.Models;
+using NoSqlRepositories.Mongo;
 
-namespace DataTests
+namespace IntegrationTests
 {
     public class DatabaseFixture : IDisposable
     {

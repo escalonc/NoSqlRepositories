@@ -1,6 +1,6 @@
-using Data.Mongo;
+using NoSqlRepositories.Mongo;
 
-namespace DataTests
+namespace IntegrationTests
 {
     public class TestRepository : MongoRepository<TestDocument>
     {

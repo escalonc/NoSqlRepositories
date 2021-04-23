@@ -1,7 +1,7 @@
 using System;
-using Core.Contracts;
+using NoSqlRepositories.Contracts;
 
-namespace Core.Models
+namespace NoSqlRepositories.Models
 {
     public class BaseEntity : IAuditable
     {
