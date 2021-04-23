@@ -38,4 +38,5 @@ jobs:
           registry-url: https://nuget.pkg.github.com/escalonc/index.json
         env:
           PACKAGES_GITHUB_TOKEN: ${{secrets.PACKAGES_GITHUB_TOKEN}}
-      - run: dotnet nuget push "./src/NoSqlRepositories/bin/Debug/NoSqlRepositories.1.0.0.nupkg" --api-key ${{secrets.PACKAGES_GITHUB_TOKEN}} --source "https://nuget.pkg.github.com/escalonc/index.json"
+      - run: ls ./src/NoSqlRepositories/bin
+#      - run: dotnet nuget push "./src/NoSqlRepositories/bin/Debug/NoSqlRepositories.1.0.0.nupkg" --api-key ${{secrets.PACKAGES_GITHUB_TOKEN}} --source "https://nuget.pkg.github.com/escalonc/index.json"
